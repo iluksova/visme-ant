@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
     selectTransformation,
+    selectVisualization,
     transformation,
+    visualization
 } from './optionsSlice';
 import {styled} from "@mui/material/styles";
 import {Divider, Stack, Toolbar} from "@mui/material";
@@ -28,16 +30,21 @@ const optionsWidth = 240;
 function Options() {
 
     const selectedTransformation = useSelector(transformation);
+    const selectedVisualization = useSelector(visualization);
     const dispatch = useDispatch();
 
 
-    const handleChange = (event) => {
+    const handleChangeTransformation = (event) => {
         dispatch(selectTransformation(event.target.value));
+    };
+
+    const handleChangeVisualization = (event) => {
+        dispatch(selectVisualization(event.target.value));
     };
 
     return (
         <Stack sx={{
-            width: '15%',
+            width: '80%',
             mt: '70px',
             pl: '10px',
             pt: '10px'
@@ -49,10 +56,26 @@ function Options() {
                     id="2d-method-select"
                     value={selectedTransformation}
                     label="Transformation"
-                    onChange={handleChange}
+                    onChange={handleChangeTransformation}
                 >
                     <MenuItem value={'pca'}>PCA</MenuItem>
                     <MenuItem value={'phate'}>Phate</MenuItem>
+                </Select>
+            </FormControl>
+            <FormControl
+                fullWidth
+                style={{ marginTop: '20px' }}
+            >
+                <InputLabel id="visualization-select-label">Visualization</InputLabel>
+                <Select
+                    labelId="visualization-select-label"
+                    id="visualization-select"
+                    value={selectedVisualization}
+                    label="Transformation"
+                    onChange={handleChangeVisualization}
+                >
+                    <MenuItem value={'scatter'}>Scatter</MenuItem>
+                    <MenuItem value={'faces'}>Faces</MenuItem>
                 </Select>
             </FormControl>
 

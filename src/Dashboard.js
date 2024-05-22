@@ -9,6 +9,7 @@ import Options from "./features/options/Options";
 import {useDispatch} from "react-redux";
 import {dataLoaded, transformationsLoaded} from "./features/data/dataSlice";
 import {MainChart} from "./features/chart/MainChart";
+import {DetailPanel} from "./features/detail/DetailPanel";
 
 
 const defaultTheme = createTheme();
@@ -79,21 +80,30 @@ function Dashboard() {
             <Box sx={{
                 display: 'flex',
                 flexGrow: 1,
-                flex: '0 0 25em',
+                flex: '0 0 15em',
                 overflow: 'auto',
             }}
-                 component="main">
+                 component="div">
                 <Options/>
             </Box>
             <Box sx={{
                 display: 'flex',
-                flexGrow: 1,
+                flexGrow: 0,
                 height: '100vh',
-                width: '30vh',
+                width: '1200px',
                 overflow: 'auto',
             }}
-                 component="main">
+                 component="div">
                 <MainChart/>
+            </Box>
+            <Box sx={{
+                display: 'flex',
+                flexGrow: 1,
+                flex: '1 1 ',
+                overflow: 'auto',
+            }}
+                 component="div">
+                <DetailPanel />
             </Box>
         </Box>
     </ThemeProvider>);

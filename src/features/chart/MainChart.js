@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import ReactEcharts from 'echarts-for-react';
 import {useSelector, useDispatch} from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import {transformation, visualization} from '../options/optionsSlice';
-import {transformations} from "../data/dataSlice";
+import {selectTransformation, transformation, visualization} from '../options/optionsSlice';
+import {selectIds, transformations} from "../data/dataSlice";
 
 export function MainChart() {
 
@@ -11,8 +11,14 @@ export function MainChart() {
     const selectedVisualization = useSelector(visualization);
     const transformationsData = useSelector(transformations);
 
+    const dispatch = useDispatch();
+
+    const handleSelectData = (ids) => {
+        dispatch(selectIds(ids));
+    };
+
     const gridSize = 10
-    const chartSize = 1300
+    const chartSize = 1150
 
     const ranges = (data) => {
         const xMin = data.reduce((prev, curr) => prev[0] < curr[0] ? prev : curr)[0];
@@ -29,6 +35,7 @@ export function MainChart() {
         const stepY = (yMax - yMin) / gridSize;
 
         let grid = [];
+
         let currX = xMin;
         let currY = yMin;
         // for each grid cells, find respective items and select one representative along with the items count
@@ -41,7 +48,8 @@ export function MainChart() {
                     //let cellRepresentative = cellData[Math.floor(Math.random() * cellData.length)];
                     // select first to enable caching
                     let cellRepresentative = cellData[0];
-                    grid.push([cellRepresentative['id'], currX, currY, cellData.length])
+                    grid.push([cellRepresentative['id'], currX, currY, cellData.length, cellData.map((item) => item['id'])])
+
 
                 }
 
@@ -75,7 +83,7 @@ export function MainChart() {
                     type: 'text',
                     style: {
                         text: api.value(3),
-                        textFont: api.font({fontSize: 14}),
+                        textFont: api.font({fontSize: 14, fontWeight: 'bold'}),
                         textAlign: 'center',
                         textVerticalAlign: 'bottom'
                     },
@@ -89,8 +97,11 @@ export function MainChart() {
     const getOptions = () => {
         const data = transformationsData[selectedTransformation]
         const [xMin, xMax, yMin, yMax] = ranges(data)
+        const grid = facesGrid(data, [xMin, xMax, yMin, yMax]);
+
         if (selectedVisualization === 'scatter') {
             return {
+                grid: {show: true, left: 40, top: 40, bottom: 40},
                 xAxis: {
                     show: true,
                     scale: true,
@@ -127,7 +138,7 @@ export function MainChart() {
             };
         } else {
             return {
-                grid: {show: true},
+                grid: {show: true, left: 40, top: 40, bottom: 40},
                 xAxis: {
                     show: true,
                     scale: true,
@@ -146,7 +157,7 @@ export function MainChart() {
                 },
                 series: [{
                     type: 'custom',
-                    data: facesGrid(data, [xMin, xMax, yMin, yMax]),
+                    data: grid,
                     encode: {
                         x: 1,
                         y: 2
@@ -157,11 +168,25 @@ export function MainChart() {
         }
     };
 
+    const handleClick = (event) => {
+        //setSelected((prevSelected) => (prevSelected !== event.name ? event.name : null));
+        if (event.name) {
+            handleSelectData([event.name])
+        } else if (event.value){
+            console.log(event.value[0] + ":" + event.value[3]);
+            handleSelectData(event.value[4]);
+        }
+    };
+
+    const events = {
+        'click': (e) => handleClick(e),
+    };
+
     if (!transformationsData)
         return <CircularProgress/>
     return <div style={{width: chartSize, height: chartSize, marginTop: '50px',}}>
         <ReactEcharts className="MainChart" style={{width: '100%', height: '100%'}}
-                      option={getOptions()} /*onEvents={events} *//>;
+                      option={getOptions()} onEvents={events} />;
     </div>
 
 }

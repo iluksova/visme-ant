@@ -1,15 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ReactEcharts from 'echarts-for-react';
 import {useSelector, useDispatch} from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import {selectTransformation, transformation, visualization} from '../options/optionsSlice';
-import {selectIds, transformations} from "../data/dataSlice";
+import {selectIds, transformations, } from "../data/dataSlice";
 
 export function MainChart() {
 
     const selectedTransformation = useSelector(transformation);
     const selectedVisualization = useSelector(visualization);
     const transformationsData = useSelector(transformations);
+    let selectedIndex = useRef(null);
+    let echartsReactRef = useRef(null);
 
     const dispatch = useDispatch();
 
@@ -64,19 +66,23 @@ export function MainChart() {
             api.value(1),
             api.value(2)
         ]);
-        const imgSize = Math.floor(chartSize/(gridSize*1.6))
+       //  const imgSize = Math.round(Math.floor(chartSize/(gridSize*1.6)) *2)/2
+        const imgSize = 70;
         return {
             type: 'group',
+            styleEmphasis: {borderColor : 'blue',  borderWidth: '5', color: 'blue'},
             children: [
                 {
                     type: 'image',
                     style: {
                         image: 'data/rrsm/visualizations/faces/1/' + api.value(0) + '.png',
-                        x: -imgSize/4,
+                        x: -imgSize,
                         y: -imgSize/2,
                         width: imgSize,
-                        height: imgSize
+                        height: imgSize,
+                        shadowBlur: 0
                     },
+                    styleEmphasis: { stroke : 'blue',  lineWidth: '5', shadowBlur: 6},
                     position: point
                 },
                 {
@@ -87,7 +93,8 @@ export function MainChart() {
                         textAlign: 'center',
                         textVerticalAlign: 'bottom'
                     },
-                    position: [point[0] - imgSize/5, point[1] - imgSize/3]
+                    styleEmphasis: { fontColor : '#ccc', fontWeight: 'bold italic',  stroke : 'blue',},
+                    position: [point[0] - imgSize, point[1] - imgSize/3]
                 }
             ]
         };
@@ -101,7 +108,7 @@ export function MainChart() {
 
         if (selectedVisualization === 'scatter') {
             return {
-                grid: {show: true, left: 40, top: 40, bottom: 40},
+                grid: {show: true, left: 40, top: 40, bottom: 40, right: 40},
                 xAxis: {
                     show: true,
                     scale: true,
@@ -138,7 +145,7 @@ export function MainChart() {
             };
         } else {
             return {
-                grid: {show: true, left: 40, top: 40, bottom: 40},
+                grid: {show: true, left: 40, top: 40, bottom: 40, right: 40},
                 xAxis: {
                     show: true,
                     scale: true,
@@ -169,13 +176,25 @@ export function MainChart() {
     };
 
     const handleClick = (event) => {
-        //setSelected((prevSelected) => (prevSelected !== event.name ? event.name : null));
+
         if (event.name) {
             handleSelectData([event.name])
         } else if (event.value){
             console.log(event.value[0] + ":" + event.value[3]);
+            echartsReactRef.getEchartsInstance().dispatchAction({
+                type: 'downplay',
+                seriesIndex: event.seriesIndex,
+                dataIndex: selectedIndex
+            })
+            echartsReactRef.getEchartsInstance().dispatchAction({
+                type: 'highlight',
+                seriesIndex: event.seriesIndex,
+                dataIndex: event.dataIndex
+            })
             handleSelectData(event.value[4]);
         }
+        selectedIndex = event.dataIndex;
+
     };
 
     const events = {
@@ -184,9 +203,12 @@ export function MainChart() {
 
     if (!transformationsData)
         return <CircularProgress/>
-    return <div style={{width: chartSize, height: chartSize, marginTop: '50px',}}>
-        <ReactEcharts className="MainChart" style={{width: '100%', height: '100%'}}
-                      option={getOptions()} onEvents={events} />;
+    return <div style={{width: chartSize, height: chartSize}}>
+        <ReactEcharts ref={(e) => { echartsReactRef = e; }}
+                      className="MainChart"
+                      style={{width: '100%', height: '100%'}}
+                      option={getOptions()}
+                      onEvents={events} />;
     </div>
 
 }

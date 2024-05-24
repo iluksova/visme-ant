@@ -10,6 +10,7 @@ import {useDispatch} from "react-redux";
 import {dataLoaded, transformationsLoaded} from "./features/data/dataSlice";
 import {MainChart} from "./features/chart/MainChart";
 import {DetailPanel} from "./features/detail/DetailPanel";
+import ant from "./ant.svg";
 
 
 const defaultTheme = createTheme();
@@ -17,7 +18,7 @@ const defaultTheme = createTheme();
 function parseCsv(result) {
     const decoder = new TextDecoder('utf-8')
     const csv = decoder.decode(result.value) // the csv text
-    const results = Papa.parse(csv, { header: true, dynamicTyping: true }) // object with { data, errors, meta }
+    const results = Papa.parse(csv, {header: true, dynamicTyping: true}) // object with { data, errors, meta }
     return results.data
 }
 
@@ -37,6 +38,7 @@ function Dashboard() {
             const dataset = parseCsv(await reader.read())
             dispatch(dataLoaded(dataset))
         }
+
         loadData()
     }, [dispatch])
 
@@ -50,9 +52,10 @@ function Dashboard() {
             const pcaReader = pcaResponse.body.getReader()
             const pcaResult = parseCsv(await pcaReader.read()) // raw array
 
-             // array of objects
+            // array of objects
             dispatch(transformationsLoaded({'phate': phateResult, 'pca': pcaResult}))
         }
+
         loadTransformations()
     }, [dispatch])
 
@@ -66,6 +69,7 @@ function Dashboard() {
                         pr: '24px', // keep right padding when options closed
                     }}
                 >
+                    <img src={ant} style={{  height: '50px', marginRight: '15px', pointerEvents: 'none'}} alt="logo" />
                     <Typography
                         component="h1"
                         variant="h6"
@@ -88,22 +92,33 @@ function Dashboard() {
             </Box>
             <Box sx={{
                 display: 'flex',
-                flexGrow: 0,
-                height: '100vh',
-                width: '1200px',
-                overflow: 'auto',
-            }}
-                 component="div">
-                <MainChart/>
-            </Box>
-            <Box sx={{
-                display: 'flex',
                 flexGrow: 1,
-                flex: '1 1 ',
-                overflow: 'auto',
+                height: '1150px',
+                width: '100%',
+                mt: '70px',
+                overflow: 'hidden'
             }}
                  component="div">
-                <DetailPanel />
+                <Box sx={{
+                    display: 'flex',
+                    flexGrow: 0,
+                    height: '100%',
+                    width: '1200px',
+                }}
+                     component="div">
+                    <MainChart/>
+                </Box>
+                <Box sx={{
+                    display: 'flex',
+                    height: '100%',
+                    width: '100%',
+                    flexGrow: 1,
+                    flex: '1 0 ',
+                    overflow: 'auto',
+                }}
+                     component="div">
+                    <DetailPanel/>
+                </Box>
             </Box>
         </Box>
     </ThemeProvider>);

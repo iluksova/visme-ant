@@ -76,8 +76,8 @@ export function MainChart() {
                     type: 'image',
                     style: {
                         image: 'data/rrsm/visualizations/faces/1/' + api.value(0) + '.png',
-                        x: -imgSize,
-                        y: -imgSize/2,
+                            // x: -imgSize,
+                            y: -imgSize,
                         width: imgSize,
                         height: imgSize,
                         shadowBlur: 0
@@ -94,7 +94,7 @@ export function MainChart() {
                         textVerticalAlign: 'bottom'
                     },
                     styleEmphasis: { fontColor : '#ccc', fontWeight: 'bold italic',  stroke : 'blue',},
-                    position: [point[0] - imgSize, point[1] - imgSize/3]
+                    position: [point[0] , point[1] - imgSize + 20]
                 }
             ]
         };
@@ -149,12 +149,16 @@ export function MainChart() {
                 xAxis: {
                     show: true,
                     scale: true,
+                    min: Math.round(xMin * 120) / 100,
+                    max: Math.round(xMax * 120) / 100,
                     axisLine: { show: false },
                     splitLine: { show: false },
                 },
                 yAxis: {
                     show: true,
                     scale: true,
+                    min: Math.round(yMin * 120) / 100,
+                    max: Math.round(yMax * 120) / 100,
                     axisLine: { show: false },
                     splitLine: { show: false },
                 },

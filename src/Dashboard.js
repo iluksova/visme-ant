@@ -22,21 +22,42 @@ function parseCsv(result) {
     return results.data
 }
 
+function parseCsvPath(path) {
+    let data = [];
+    Papa.parse(path, {
+        header: true, dynamicTyping: true, download: true, complete: function (results) {
+            data = results.data;
+        }
+    }) // object with { data, errors, meta }
+    return data;
+}
+
 function Dashboard() {
 
     const dataPath = 'data/rrsm/data.csv';
     const phateTransformationPath = 'data/rrsm/2d/phate.csv';
     const pcaTransformationPath = 'data/rrsm/2d/pca.csv';
+    const tsne5TransformationPath = 'data/rrsm/2d/tsne_p5.csv';
+    const tsne30TransformationPath = 'data/rrsm/2d/tsne_p30.csv';
+    const tsne50TransformationPath = 'data/rrsm/2d/tsne_p50.csv';
+    const tsne100TransformationPath = 'data/rrsm/2d/tsne_p100.csv';
 
 
     const dispatch = useDispatch();
 
     useEffect(() => {
         async function loadData() {
-            const response = await fetch(dataPath)
-            const reader = response.body.getReader()
-            const dataset = parseCsv(await reader.read())
-            dispatch(dataLoaded(dataset))
+            // const response = await fetch(dataPath)
+            // const reader = response.body.getReader()
+            // const dataset = parseCsv(await reader.read())
+            //const dataset = parseCsvPath(dataPath)
+
+            Papa.parse(dataPath, {
+                header: true, dynamicTyping: true, download: true, complete: function (results) {
+                    dispatch(dataLoaded(results.data))
+                }
+            })
+            //dispatch(dataLoaded(dataset))
         }
 
         loadData()
@@ -52,8 +73,27 @@ function Dashboard() {
             const pcaReader = pcaResponse.body.getReader()
             const pcaResult = parseCsv(await pcaReader.read()) // raw array
 
+            const tsne5Response = await fetch(tsne5TransformationPath)
+            const tsne5Reader = tsne5Response.body.getReader()
+            const tsne5Result = parseCsv(await tsne5Reader.read()) // raw array
+
+            const tsne30Response = await fetch(tsne30TransformationPath)
+            const tsne30Reader = tsne30Response.body.getReader()
+            const tsne30Result = parseCsv(await tsne30Reader.read()) // raw array
+
+            const tsne50Response = await fetch(tsne50TransformationPath)
+            const tsne50Reader = tsne50Response.body.getReader()
+            const tsne50Result = parseCsv(await tsne50Reader.read()) // raw array
+
+
             // array of objects
-            dispatch(transformationsLoaded({'phate': phateResult, 'pca': pcaResult}))
+            dispatch(transformationsLoaded({
+                'phate': phateResult,
+                'pca': pcaResult,
+                'tsne5': tsne5Result,
+                'tsne30': tsne30Result,
+                'tsne50': tsne50Result,
+            }))
         }
 
         loadTransformations()
@@ -66,10 +106,15 @@ function Dashboard() {
             <AppBar position="absolute">
                 <Toolbar
                     sx={{
-                        pr: '24px', // keep right padding when options closed
+                        pr: '10px', // keep right padding when options closed
                     }}
                 >
-                    <img src={ant} style={{  height: '50px', marginRight: '15px', pointerEvents: 'none'}} alt="logo" />
+                    <img src={ant} style={{
+                        height: '45px',
+                        marginRight: '10px',
+                        pointerEvents: 'none',
+                        transform: 'rotate(0.10turn)'
+                    }} alt="logo"/>
                     <Typography
                         component="h1"
                         variant="h6"
@@ -77,7 +122,7 @@ function Dashboard() {
                         noWrap
                         sx={{flexGrow: 1}}
                     >
-                        VismeAnt
+                        VISAnt
                     </Typography>
                 </Toolbar>
             </AppBar>

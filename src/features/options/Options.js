@@ -45,7 +45,7 @@ function Options() {
     return (
         <Stack sx={{
             width: '90%',
-            mt: '70px',
+            mt: '90px',
             pl: '10px',
             pt: '10px'
         }}>
@@ -60,6 +60,9 @@ function Options() {
                 >
                     <MenuItem value={'pca'}>PCA</MenuItem>
                     <MenuItem value={'phate'}>Phate</MenuItem>
+                    <MenuItem value={'tsne5'}>t-SNE (perplexity=5)</MenuItem>
+                    <MenuItem value={'tsne30'}>t-SNE (perplexity=30)</MenuItem>
+                    <MenuItem value={'tsne50'}>t-SNE (perplexity=50)</MenuItem>
                 </Select>
             </FormControl>
             <FormControl

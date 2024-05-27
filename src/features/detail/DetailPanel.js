@@ -58,7 +58,7 @@ function ChartPanel(props) {
                 position: 'top',
                 formatter: function (params) {
                     return (
-                        params.data.name
+                        "<b>" + params.name + "</b>: " + params.value
                     );
                 }
             },

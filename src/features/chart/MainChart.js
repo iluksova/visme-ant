@@ -19,6 +19,10 @@ export function MainChart() {
         dispatch(selectIds(ids));
     };
 
+    React.useEffect(() => {
+        handleSelectData([])
+    }, [selectedTransformation]);
+
     const gridSize = 10
     const chartSize = 1150
 

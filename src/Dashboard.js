@@ -18,7 +18,7 @@ const defaultTheme = createTheme();
 function parseCsv(result) {
     const decoder = new TextDecoder('utf-8')
     const csv = decoder.decode(result.value) // the csv text
-    const results = Papa.parse(csv, {header: true, dynamicTyping: true}) // object with { data, errors, meta }
+    const results = Papa.parse(csv, {header: true, dynamicTyping: true, skipEmptyLines: true}) // object with { data, errors, meta }
     return results.data
 }
 
@@ -53,7 +53,7 @@ function Dashboard() {
             //const dataset = parseCsvPath(dataPath)
 
             Papa.parse(dataPath, {
-                header: true, dynamicTyping: true, download: true, complete: function (results) {
+                header: true, skipEmptyLines: true, dynamicTyping: true, download: true, complete: function (results) {
                     dispatch(dataLoaded(results.data))
                 }
             })
